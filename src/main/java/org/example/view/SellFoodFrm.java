@@ -1,7 +1,11 @@
 package org.example.view;
 
+import org.example.constant.TableColumn;
+import org.example.constant.TableConstant;
 import org.example.dao.FoodItemDAO;
+import org.example.mapper.TableMapper;
 import org.example.model.FoodItem;
+import org.example.view.component.Table;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -31,22 +35,9 @@ public class SellFoodFrm extends JFrame implements ActionListener {
         searchButton.addActionListener(this);
         processPaymentButton.addActionListener(this);
         addToInvoiceButton.addActionListener(this);
+        System.out.println(foodItemDAO.getAllFoodItems().size());
+        this.foodResultTable = new Table(TableMapper.foodItemToTable(foodItemDAO.getAllFoodItems()), TableColumn.FOOD_ITEM_COLUMN, TableConstant.FOOD_ITEM_COLUMN_WIDTHS);
 
-        String[] columnNames = {"ID", "Name", "Type"};
-        DefaultTableModel model = new DefaultTableModel(columnNames, 0);
-        // set size for cloumns
-        foodResultTable.getColumnModel().getColumn(0).setPreferredWidth(50);
-        foodResultTable.getColumnModel().getColumn(1).setPreferredWidth(200);
-        foodResultTable.getColumnModel().getColumn(2).setPreferredWidth(200);
-        //center align
-        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-        centerRenderer.setHorizontalAlignment(JLabel.CENTER);
-        ArrayList<FoodItem> foodItems = foodItemDAO.getAllFoodItems();
-        foodItems.forEach(foodItem -> {
-            model.addRow(new Object[]{foodItem.getId(), foodItem.getName(), foodItem.getType()});
-        });
-
-        foodResultTable.setModel(model);
     }
 
     @Override
