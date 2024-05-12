@@ -13,16 +13,24 @@ public class LoginFrm extends JFrame implements ActionListener {
     private JLabel usernameTitle;
     private JTextField usernameTextField;
     private JLabel passwordTitle;
-    private JTextField passwordTextField;
+    private JPasswordField passwordTextField;
     private JButton loginButton;
 
     public LoginFrm(){
+        initUI();
+        bindingActionListener();
+    }
+
+    private void initUI(){
         setTitle("Login");
         setSize(400, 300);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setResizable(false);
         setContentPane(loginView);
+    }
+
+    private void bindingActionListener(){
         loginButton.addActionListener(this);
     }
 
@@ -31,10 +39,10 @@ public class LoginFrm extends JFrame implements ActionListener {
         if (e.getSource() == loginButton) {
             User user = new User();
             user.setUsername(usernameTextField.getText());
-            user.setPassword(passwordTextField.getText());
+            user.setPassword(new String(passwordTextField.getPassword()));
 
             UserDAO userDAO = new UserDAO();
-            if(userDAO.checkLogin(user)){
+            if(userDAO.checkLogin(user) != null){
                 JOptionPane.showMessageDialog(this, "Login success");
                 (new SellerHomeFrm(user)).setVisible(true);
                 this.dispose();
