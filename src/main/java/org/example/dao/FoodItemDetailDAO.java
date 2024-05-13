@@ -14,7 +14,7 @@ public class FoodItemDetailDAO extends DAO {
     public boolean updateFoodItemDetail(FoodItemInvoice foodItemInvoice) {
         boolean result = false;
         if (checkQuantity(foodItemInvoice)) {
-            String query = "UPDATE tblfooditemdetail SET remainingQuantity = remainingQuantity - ? WHERE foodItemID = ?";
+            String query = "UPDATE tblfooditemdetail SET totalQuantity = totalQuantity - ? WHERE foodItemID = ?";
             try {
                 PreparedStatement ps = con.prepareStatement(query);
                 ps.setInt(1, foodItemInvoice.getQuantity());
@@ -33,16 +33,16 @@ public class FoodItemDetailDAO extends DAO {
 
     //check if quantity is enough
     public boolean checkQuantity(FoodItemInvoice foodItemInvoice) {
-        String query = "SELECT remainingQuantity FROM tblfooditemdetail WHERE foodItemID = ? and size = ?";
+        String query = "SELECT totalQuantity FROM tblfooditemdetail WHERE foodItemID = ? and size = ?";
         try {
             PreparedStatement ps = con.prepareStatement(query);
             ps.setInt(1, foodItemInvoice.getFoodItemId());
             ps.setString(2, foodItemInvoice.getSize());
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                int remainingQuantity = rs.getInt("remainingQuantity");
-                System.out.println(remainingQuantity);
-                if (remainingQuantity < foodItemInvoice.getQuantity()) {
+                int totalQuantity = rs.getInt("totalQuantity");
+                System.out.println(totalQuantity);
+                if (totalQuantity < foodItemInvoice.getQuantity()) {
                     return false;
                 }
             }

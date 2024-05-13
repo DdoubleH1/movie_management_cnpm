@@ -4,13 +4,13 @@ public class FoodItemDetail {
     private int id;
     private int foodItemID;
     private String size;
-    private int remainingQuantity;
+    private int totalQuantity;
     private double price;
 
-    public FoodItemDetail(int foodItemID, String size, int remainingQuantity, double price) {
+    public FoodItemDetail(int foodItemID, String size, int totalQuantity, double price) {
         this.foodItemID = foodItemID;
         this.size = size;
-        this.remainingQuantity = remainingQuantity;
+        this.totalQuantity = totalQuantity;
         this.price = price;
     }
 
@@ -38,12 +38,12 @@ public class FoodItemDetail {
         this.size = size;
     }
 
-    public int getRemainingQuantity() {
-        return remainingQuantity;
+    public int gettotalQuantity() {
+        return totalQuantity;
     }
 
-    public void setRemainingQuantity(int remainingQuantity) {
-        this.remainingQuantity = remainingQuantity;
+    public void settotalQuantity(int totalQuantity) {
+        this.totalQuantity = totalQuantity;
     }
 
     public double getPrice() {

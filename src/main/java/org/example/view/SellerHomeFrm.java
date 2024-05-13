@@ -17,7 +17,6 @@ public class SellerHomeFrm extends JFrame implements ActionListener {
     private JButton sellFoodButton;
     private JButton sellComboButton;
     private JLabel welcomeTextField;
-    private JButton sellTicketButton;
     private User user;
     private Customer customer;
     private Invoice invoice;
@@ -29,8 +28,6 @@ public class SellerHomeFrm extends JFrame implements ActionListener {
         bindingActionListener();
         initInvoice();
     }
-
-
 
     private void initInvoice() {
         invoice = new Invoice();
@@ -57,7 +54,6 @@ public class SellerHomeFrm extends JFrame implements ActionListener {
     private void bindingActionListener() {
         sellFoodButton.addActionListener(this);
         sellComboButton.addActionListener(this);
-        sellTicketButton.addActionListener(this);
     }
 
     private String getCurrentDate() {

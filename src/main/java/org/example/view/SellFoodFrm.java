@@ -44,7 +44,7 @@ public class SellFoodFrm extends JFrame implements ActionListener {
 
     private void initUI() {
         setTitle("Sell Food");
-        setSize(1500, 1000);
+        setSize(1000, 800);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setResizable(false);
@@ -82,31 +82,48 @@ public class SellFoodFrm extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == searchButton) {
-            String foodName = foodNameTextField.getText();
-            bindFoodItemsToTable(foodItemDAO.searchFoodItem(foodName));
+            searchClicked();
         } else if (e.getSource() == addToInvoiceButton) {
-            int selectedRow = foodResultTable.getSelectedRow();
-            if (selectedRow == -1) {
-                JOptionPane.showMessageDialog(this, "Please select a food item to add to the invoice");
-                return;
-            }
-
-            int foodItemId = Integer.parseInt(foodResultTable.getValueAt(selectedRow, 0).toString());
-            int quantity = Integer.parseInt(quantityTextField.getText());
-            String size = sizeTextField.getText();
-            FoodItemInvoice foodItemInvoice = new FoodItemInvoice(size, quantity, foodItemId, invoice.getId());
-            try {
-                if(foodItemDetailDAO.updateFoodItemDetail(foodItemInvoice)){
-                    foodItemInvoiceDAO.addFoodItemInvoice(foodItemInvoice);
-                    JOptionPane.showMessageDialog(this, "Food item added to invoice successfully");
-                }
-            } catch (Exception exception) {
-                JOptionPane.showMessageDialog(this, exception.getMessage());
-            }
+            addToInvoiceClicked();
 
         } else if (e.getSource() == processPaymentButton) {
-            (new MembershipAccountFrm(user, invoice)).setVisible(true);
-            this.dispose();
+            processPaymentClicked();
         }
+    }
+
+    private void searchClicked() {
+        String foodName = foodNameTextField.getText();
+        if(foodName.isEmpty()){
+           JOptionPane.showMessageDialog(this, "Please enter a food name to search");
+        }
+        else{
+            bindFoodItemsToTable(foodItemDAO.searchFoodItem(foodName));
+        }
+    }
+
+    private void addToInvoiceClicked() {
+        int selectedRow = foodResultTable.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Please select a food item to add to the invoice");
+            return;
+        }
+
+        int foodItemId = Integer.parseInt(foodResultTable.getValueAt(selectedRow, 0).toString());
+        int quantity = Integer.parseInt(quantityTextField.getText());
+        String size = sizeTextField.getText();
+        FoodItemInvoice foodItemInvoice = new FoodItemInvoice(size, quantity, foodItemId, invoice.getId());
+        try {
+            if (foodItemDetailDAO.updateFoodItemDetail(foodItemInvoice)) {
+                foodItemInvoiceDAO.addFoodItemInvoice(foodItemInvoice);
+                JOptionPane.showMessageDialog(this, "Food item added to invoice successfully");
+            }
+        } catch (Exception exception) {
+            JOptionPane.showMessageDialog(this, exception.getMessage());
+        }
+    }
+
+    private void processPaymentClicked() {
+        (new MembershipAccountFrm(user, invoice)).setVisible(true);
+        this.dispose();
     }
 }
