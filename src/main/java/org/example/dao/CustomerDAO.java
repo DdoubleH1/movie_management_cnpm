@@ -15,14 +15,13 @@ public class CustomerDAO extends DAO {
     }
 
     public Customer addCustomer(Customer customer) {
-        String query = "INSERT INTO tblcustomer (fullName, address, age, phoneNumber, memberPoint) VALUES (?, ?, ?, ?, ?)";
+        String query = "INSERT INTO tblcustomer (fullName, address, age, phoneNumber) VALUES (?, ?, ?, ?)";
         try {
             PreparedStatement ps = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, customer.getFullName());
             ps.setString(2, customer.getAddress());
             ps.setInt(3, customer.getAge());
             ps.setString(4, customer.getPhoneNumber());
-            ps.setInt(5, customer.getMemberPoint());
             ps.executeUpdate();
 
             ResultSet generatedKeys = ps.getGeneratedKeys();
@@ -43,7 +42,7 @@ public class CustomerDAO extends DAO {
             ps.setString(1, "%" + keyword + "%");
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                Customer customer = new Customer(rs.getInt("id"), rs.getString("fullName"), rs.getString("address"), rs.getInt("age"), rs.getString("phoneNumber"), rs.getInt("memberPoint"));
+                Customer customer = new Customer(rs.getInt("id"), rs.getString("fullName"), rs.getString("address"), rs.getInt("age"), rs.getString("phoneNumber"));
                 customers.add(customer);
             }
         } catch (Exception e) {
@@ -52,6 +51,21 @@ public class CustomerDAO extends DAO {
         return customers;
     }
 
+    public Customer getCustomerById(int customerId) {
+        Customer customer = null;
+        String query = "SELECT * FROM tblcustomer WHERE id = ?";
+        try {
+            PreparedStatement ps = con.prepareStatement(query);
+            ps.setInt(1, customerId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                customer = new Customer(rs.getInt("id"), rs.getString("fullName"), rs.getString("address"), rs.getInt("age"), rs.getString("phoneNumber"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return customer;
+    }
 }
 
 

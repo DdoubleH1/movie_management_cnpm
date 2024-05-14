@@ -4,6 +4,7 @@ import org.example.constant.SearchOption;
 import org.example.constant.TableColumn;
 import org.example.constant.TableConstant;
 import org.example.dao.CustomerDAO;
+import org.example.dao.InvoiceDAO;
 import org.example.mapper.TableMapper;
 import org.example.model.Customer;
 import org.example.model.FoodItem;
@@ -24,13 +25,13 @@ public class MembershipAccountFrm extends JFrame implements ActionListener {
     private JComboBox<SearchOption> searchOptionComboBox;
     private JButton searchButton;
     private JTable customerResultTable;
-    private JButton exchangePointButton;
     private JButton nextButton;
     private JButton addNewAccountButton;
     private User user;
     private Invoice invoice;
     private SearchOption searchOption = SearchOption.FULL_NAME;
     private final CustomerDAO customerDAO = new CustomerDAO();
+    private final InvoiceDAO invoiceDAO = new InvoiceDAO();
 
     public MembershipAccountFrm(User user, Invoice invoice) {
         this.user = user;
@@ -53,7 +54,7 @@ public class MembershipAccountFrm extends JFrame implements ActionListener {
     private void bindingActionListener() {
         searchButton.addActionListener(this);
         searchOptionComboBox.addActionListener(this);
-        exchangePointButton.addActionListener(this);
+
         nextButton.addActionListener(this);
         addNewAccountButton.addActionListener(this);
     }
@@ -84,10 +85,8 @@ public class MembershipAccountFrm extends JFrame implements ActionListener {
             searchOptionComboBoxClick();
         } else if (e.getSource() == searchButton) {
             searchButtonClicked();
-        } else if (e.getSource() == exchangePointButton) {
-
         } else if (e.getSource() == nextButton) {
-
+            nextButtonClick();
         } else if (e.getSource() == addNewAccountButton) {
             addNewAccountButtonClick();
         }
@@ -109,9 +108,24 @@ public class MembershipAccountFrm extends JFrame implements ActionListener {
 
     }
 
+    private void nextButtonClick(){
+        int selectedRow = customerResultTable.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Please select a customer to continue");
+        } else {
+            int customerId = (int) customerResultTable.getValueAt(selectedRow, 0);
+            this.invoice.setCustomerId(customerId);
+            invoiceDAO.updateInvoice(this.invoice);
+            ExchangeMembershipPointFrm exchangeMembershipPointFrm = new ExchangeMembershipPointFrm(this.user, this.invoice);
+            exchangeMembershipPointFrm.setVisible(true);
+            this.dispose();
+        }
+    }
+
     private void addNewAccountButtonClick() {
         AddMembershipAccountFrm addMembershipAccountFrm = new AddMembershipAccountFrm(this.user, this.invoice);
         addMembershipAccountFrm.setVisible(true);
+        this.dispose();
     }
 
 }

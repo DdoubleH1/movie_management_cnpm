@@ -10,8 +10,24 @@ public class FoodItemDetailDAO extends DAO {
         super();
     }
 
+
+    public String getFoodItemName(int foodItemId) {
+        String query = "SELECT name FROM tblfooditem WHERE id = ?";
+        try {
+            PreparedStatement ps = con.prepareStatement(query);
+            ps.setInt(1, foodItemId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getString("name");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     //update food item detail when user buy
-    public boolean updateFoodItemDetail(FoodItemInvoice foodItemInvoice) {
+    public synchronized boolean updateFoodItemDetail(FoodItemInvoice foodItemInvoice) {
         boolean result = false;
         if (checkQuantity(foodItemInvoice)) {
             String query = "UPDATE tblfooditemdetail SET totalQuantity = totalQuantity - ? WHERE foodItemID = ?";

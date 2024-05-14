@@ -2,6 +2,8 @@ package org.example.mapper;
 
 import org.example.model.Customer;
 import org.example.model.FoodItem;
+import org.example.model.FoodItemInvoice;
+import org.example.model.dto.FoodItemInvoiceDTO;
 
 import java.util.ArrayList;
 
@@ -26,7 +28,18 @@ public class TableMapper {
             table[i][2] = customer.getAddress();
             table[i][3] = customer.getAge();
             table[i][4] = customer.getPhoneNumber();
-            table[i][5] = customer.getMemberPoint();
+        }
+        return table;
+    }
+
+    public static Object[][] foodItemInvoiceToTable(ArrayList<FoodItemInvoiceDTO> foodItemInvoices) {
+        Object[][] table = new Object[foodItemInvoices.size()][4];
+        for (int i = 0; i < foodItemInvoices.size(); i++) {
+            FoodItemInvoiceDTO foodItem = foodItemInvoices.get(i);
+            table[i][0] = foodItem.getId();
+            table[i][1] = foodItem.getFoodItemName();
+            table[i][2] = foodItem.getSize();
+            table[i][3] = foodItem.getPrice();
         }
         return table;
     }

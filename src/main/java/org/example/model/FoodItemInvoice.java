@@ -7,6 +7,9 @@ public class FoodItemInvoice {
     private int foodItemId;
     private int invoiceId;
 
+    public FoodItemInvoice() {
+    }
+
     public FoodItemInvoice(String size, int quantity, int foodItemId, int invoiceId) {
         this.size = size;
         this.quantity = quantity;
