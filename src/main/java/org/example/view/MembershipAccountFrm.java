@@ -4,10 +4,8 @@ import org.example.constant.SearchOption;
 import org.example.constant.TableColumn;
 import org.example.constant.TableConstant;
 import org.example.dao.CustomerDAO;
-import org.example.dao.InvoiceDAO;
 import org.example.mapper.TableMapper;
 import org.example.model.Customer;
-import org.example.model.FoodItem;
 import org.example.model.Invoice;
 import org.example.model.User;
 
@@ -17,7 +15,6 @@ import javax.swing.table.TableColumnModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Objects;
 
 public class MembershipAccountFrm extends JFrame implements ActionListener {
     private JPanel MembershipAccountView;
@@ -31,7 +28,6 @@ public class MembershipAccountFrm extends JFrame implements ActionListener {
     private Invoice invoice;
     private SearchOption searchOption = SearchOption.FULL_NAME;
     private final CustomerDAO customerDAO = new CustomerDAO();
-    private final InvoiceDAO invoiceDAO = new InvoiceDAO();
 
     public MembershipAccountFrm(User user, Invoice invoice) {
         this.user = user;
@@ -114,16 +110,19 @@ public class MembershipAccountFrm extends JFrame implements ActionListener {
             JOptionPane.showMessageDialog(this, "Please select a customer to continue");
         } else {
             int customerId = (int) customerResultTable.getValueAt(selectedRow, 0);
-            this.invoice.setCustomerId(customerId);
-            invoiceDAO.updateInvoice(this.invoice);
-            ExchangeMembershipPointFrm exchangeMembershipPointFrm = new ExchangeMembershipPointFrm(this.user, this.invoice);
+            String fullName = (String) customerResultTable.getValueAt(selectedRow, 1);
+            String address = (String) customerResultTable.getValueAt(selectedRow, 2);
+            int age = (int) customerResultTable.getValueAt(selectedRow, 3);
+            String phoneNumber = (String) customerResultTable.getValueAt(selectedRow, 4);
+            this.invoice.setCustomer(new Customer(customerId, fullName, address, age, phoneNumber));
+            ExchangeMembershipPointFrm exchangeMembershipPointFrm = new ExchangeMembershipPointFrm(this.invoice);
             exchangeMembershipPointFrm.setVisible(true);
             this.dispose();
         }
     }
 
     private void addNewAccountButtonClick() {
-        AddMembershipAccountFrm addMembershipAccountFrm = new AddMembershipAccountFrm(this.user, this.invoice);
+        AddMembershipAccountFrm addMembershipAccountFrm = new AddMembershipAccountFrm(this.invoice);
         addMembershipAccountFrm.setVisible(true);
         this.dispose();
     }

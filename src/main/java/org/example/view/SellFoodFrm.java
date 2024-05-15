@@ -4,20 +4,16 @@ import org.example.constant.TableColumn;
 import org.example.constant.TableConstant;
 import org.example.dao.FoodItemDAO;
 import org.example.dao.FoodItemDetailDAO;
-import org.example.dao.FoodItemInvoiceDAO;
 import org.example.mapper.TableMapper;
 import org.example.model.*;
 
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 
 public class SellFoodFrm extends JFrame implements ActionListener {
     private JPanel sellFoodView;
@@ -30,8 +26,8 @@ public class SellFoodFrm extends JFrame implements ActionListener {
     private JButton addToInvoiceButton;
     private Invoice invoice;
     private User user;
+    private final ArrayList<FoodItemInvoice> foodItemInvoices = new ArrayList<>();
     private final FoodItemDAO foodItemDAO = new FoodItemDAO();
-    private final FoodItemInvoiceDAO foodItemInvoiceDAO = new FoodItemInvoiceDAO();
     private final FoodItemDetailDAO foodItemDetailDAO = new FoodItemDetailDAO();
 
     public SellFoodFrm(User user, Invoice invoice) {
@@ -49,7 +45,7 @@ public class SellFoodFrm extends JFrame implements ActionListener {
         setLocationRelativeTo(null);
         setResizable(false);
         setContentPane(sellFoodView);
-        bindFoodItemsToTable(foodItemDAO.getAllFoodItems());
+
     }
 
     private void bindingActionListener() {
@@ -109,20 +105,23 @@ public class SellFoodFrm extends JFrame implements ActionListener {
         }
 
         int foodItemId = Integer.parseInt(foodResultTable.getValueAt(selectedRow, 0).toString());
+        String foodName = foodResultTable.getValueAt(selectedRow, 1).toString();
+        String foodType = foodResultTable.getValueAt(selectedRow, 2).toString();
+        FoodItem foodItem = new FoodItem(foodItemId, foodName, foodType, foodItemDetailDAO.getFoodItemDetailByFoodItemId(foodItemId));
         int quantity = Integer.parseInt(quantityTextField.getText());
         String size = sizeTextField.getText();
-        FoodItemInvoice foodItemInvoice = new FoodItemInvoice(size, quantity, foodItemId, invoice.getId());
-        try {
-            if (foodItemDetailDAO.updateFoodItemDetail(foodItemInvoice)) {
-                foodItemInvoiceDAO.addFoodItemInvoice(foodItemInvoice);
-                JOptionPane.showMessageDialog(this, "Food item added to invoice successfully");
-            }
-        } catch (Exception exception) {
-            JOptionPane.showMessageDialog(this, exception.getMessage());
+        FoodItemInvoice foodItemInvoice = new FoodItemInvoice(0, size, quantity, false, foodItem);
+        if(foodItemDetailDAO.checkQuantity(foodItemInvoice)){
+            foodItemInvoices.add(foodItemInvoice);
+            JOptionPane.showMessageDialog(this, "Food item added to invoice");
+        }
+        else{
+            JOptionPane.showMessageDialog(this, "Remaining quantity is not enough");
         }
     }
 
     private void processPaymentClicked() {
+        invoice.setFoodItemInvoices(foodItemInvoices);
         (new MembershipAccountFrm(user, invoice)).setVisible(true);
         this.dispose();
     }

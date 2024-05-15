@@ -21,7 +21,7 @@ public class InvoiceDAO extends DAO {
         try {
             PreparedStatement ps = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, invoice.getPayDate());
-            ps.setInt(2, invoice.getUserId());
+            ps.setInt(2, invoice.getUser().getId());
             ps.executeUpdate();
 
             ResultSet generatedKeys = ps.getGeneratedKeys();
@@ -37,7 +37,7 @@ public class InvoiceDAO extends DAO {
         String query = "UPDATE tblinvoice SET customerID = ? WHERE payDate = ? AND userID = ?";
         try {
             PreparedStatement ps = con.prepareStatement(query);
-            ps.setInt(1, invoice.getCustomerId());
+            ps.setInt(1, invoice.getCustomer().getId());
             ps.setString(2, invoice.getPayDate());
             ps.setInt(3, invoice.getUserId());
             ps.executeUpdate();
@@ -75,8 +75,6 @@ public class InvoiceDAO extends DAO {
             }
         } catch (Exception e) {
             e.printStackTrace();
-
-
         }
         return foodItemInvoices;
     }

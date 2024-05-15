@@ -4,8 +4,6 @@ import org.example.constant.TableColumn;
 import org.example.constant.TableConstant;
 import org.example.dao.InvoiceDAO;
 import org.example.mapper.TableMapper;
-import org.example.model.Customer;
-import org.example.model.FoodItemInvoice;
 import org.example.model.Invoice;
 import org.example.model.User;
 import org.example.model.dto.FoodItemInvoiceDTO;
@@ -24,13 +22,12 @@ public class ExchangeMembershipPointFrm extends JFrame implements ActionListener
     private JButton cancelButton;
     private JButton nextButton;
     private JPanel exchangeMembershipPointView;
-    private User user;
+    private JLabel customerInfoLabel;
     private Invoice invoice;
     private final InvoiceDAO invoiceDAO = new InvoiceDAO();
 
 
-    public ExchangeMembershipPointFrm(User user, Invoice invoice) {
-        this.user = user;
+    public ExchangeMembershipPointFrm(Invoice invoice) {
         this.invoice = invoice;
         initUI();
         bindingActionListener();
@@ -38,6 +35,7 @@ public class ExchangeMembershipPointFrm extends JFrame implements ActionListener
 
     private void initUI() {
         setTitle("Exchange Membership Point");
+        customerInfoLabel.setText(invoice.getCustomer().getFullName() + " - Membership point: " +  );
         setSize(1000, 800);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);

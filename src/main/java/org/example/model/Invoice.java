@@ -1,18 +1,25 @@
 package org.example.model;
 
+import java.util.ArrayList;
+
 public class Invoice {
     private int id;
     private String payDate;
-    private int userId;
-    private int customerId;
+    private User user;
+    private Customer customer;
+    private ArrayList<FoodItemInvoice> foodItemInvoices;
+    private ArrayList<Ticket> tickets;
 
     public Invoice() {
     }
 
-    public Invoice(String payDate, int userId, int customerId) {
+    public Invoice(int id, String payDate, User user, Customer customer, ArrayList<FoodItemInvoice> foodItemInvoices, ArrayList<Ticket> tickets) {
+        this.id = id;
         this.payDate = payDate;
-        this.userId = userId;
-        this.customerId = customerId;
+        this.user = user;
+        this.customer = customer;
+        this.foodItemInvoices = foodItemInvoices;
+        this.tickets = tickets;
     }
 
     public int getId() {
@@ -31,19 +38,35 @@ public class Invoice {
         this.payDate = payDate;
     }
 
-    public int getUserId() {
-        return userId;
+    public User getUser() {
+        return user;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public void setUser(User user) {
+        this.user = user;
     }
 
-    public int getCustomerId() {
-        return customerId;
+    public Customer getCustomer() {
+        return customer;
     }
 
-    public void setCustomerId(int customerId) {
-        this.customerId = customerId;
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+    }
+
+    public ArrayList<FoodItemInvoice> getFoodItemInvoices() {
+        return foodItemInvoices;
+    }
+
+    public void setFoodItemInvoices(ArrayList<FoodItemInvoice> foodItemInvoices) {
+        this.foodItemInvoices = foodItemInvoices;
+    }
+
+    public ArrayList<Ticket> getTickets() {
+        return tickets;
+    }
+
+    public void setTickets(ArrayList<Ticket> tickets) {
+        this.tickets = tickets;
     }
 }

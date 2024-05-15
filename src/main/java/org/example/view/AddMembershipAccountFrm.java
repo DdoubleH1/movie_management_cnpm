@@ -22,8 +22,7 @@ public class AddMembershipAccountFrm extends JFrame implements ActionListener {
     private User user;
     private Invoice invoice;
 
-    public AddMembershipAccountFrm(User user, Invoice invoice){
-        this.user = user;
+    public AddMembershipAccountFrm(Invoice invoice){
         this.invoice = invoice;
         initUI();
         bindingActionListener();

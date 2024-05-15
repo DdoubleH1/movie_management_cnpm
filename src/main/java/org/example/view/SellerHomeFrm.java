@@ -1,7 +1,7 @@
 package org.example.view;
 
 import org.example.dao.InvoiceDAO;
-import org.example.model.Customer;
+
 import org.example.model.Invoice;
 import org.example.model.User;
 
@@ -13,12 +13,10 @@ import java.util.Date;
 
 public class SellerHomeFrm extends JFrame implements ActionListener {
     private JPanel sellerHomeView;
-    private JLabel sellerHomeTitle;
     private JButton sellFoodButton;
     private JButton sellComboButton;
     private JLabel welcomeTextField;
     private User user;
-    private Customer customer;
     private Invoice invoice;
     private final InvoiceDAO invoiceDAO = new InvoiceDAO();
 
@@ -33,7 +31,7 @@ public class SellerHomeFrm extends JFrame implements ActionListener {
         invoice = new Invoice();
         // Set the pay date to the current date and format int pattern yyyy-MM-dd HH:mm:ss
         invoice.setPayDate(getCurrentDate());
-        invoice.setUserId(this.user.getId());
+        invoice.setUser(this.user);
         try{
             invoiceDAO.addInvoice(invoice);
         } catch (Exception e) {

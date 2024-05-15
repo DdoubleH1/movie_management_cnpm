@@ -11,22 +11,22 @@ public class FoodItemInvoiceDAO extends DAO {
         super();
     }
 
-    public void addFoodItemInvoice(FoodItemInvoice foodItemInvoice) {
-        String query = "INSERT INTO tblfooditeminvoice (invoiceID, foodItemID, size, quantity) VALUES (?, ?, ?, ?)";
-        try {
-            PreparedStatement ps = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-            ps.setInt(1, foodItemInvoice.getInvoiceId());
-            ps.setInt(2, foodItemInvoice.getFoodItemId());
-            ps.setString(3, foodItemInvoice.getSize());
-            ps.setInt(4, foodItemInvoice.getQuantity());
-            ps.executeUpdate();
-
-            ResultSet generatedKeys = ps.getGeneratedKeys();
-            if (generatedKeys.next()) {
-                foodItemInvoice.setId(generatedKeys.getInt(1));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+//    public void addFoodItemInvoice(FoodItemInvoice foodItemInvoice) {
+//        String query = "INSERT INTO tblfooditeminvoice (invoiceID, foodItemID, size, quantity) VALUES (?, ?, ?, ?)";
+//        try {
+//            PreparedStatement ps = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+//            ps.setInt(1, foodItemInvoice.getInvoiceId());
+//            ps.setInt(2, foodItemInvoice.getFoodItemId());
+//            ps.setString(3, foodItemInvoice.getSize());
+//            ps.setInt(4, foodItemInvoice.getQuantity());
+//            ps.executeUpdate();
+//
+//            ResultSet generatedKeys = ps.getGeneratedKeys();
+//            if (generatedKeys.next()) {
+//                foodItemInvoice.setId(generatedKeys.getInt(1));
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
 }
