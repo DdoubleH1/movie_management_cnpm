@@ -60,7 +60,7 @@ public class AddMembershipAccountFrm extends JFrame implements ActionListener {
         if (fullName.isEmpty() || age.isEmpty() || phoneNumber.isEmpty() || address.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Please fill all fields");
         } else {
-            this.customer = customerDAO.addCustomer(new Customer(fullName, address, Integer.parseInt(age), phoneNumber));
+            this.customer = customerDAO.addCustomer(new Customer(fullName, address, Integer.parseInt(age), phoneNumber, 0));
             JOptionPane.showMessageDialog(this, "Add customer successfully");
             (new ShowInvoiceFrm(this.invoice)).setVisible(true);
             this.dispose();

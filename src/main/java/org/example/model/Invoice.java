@@ -5,6 +5,7 @@ import java.util.ArrayList;
 public class Invoice {
     private int id;
     private String payDate;
+    private int totalPrice;
     private User user;
     private Customer customer;
     private ArrayList<FoodItemInvoice> foodItemInvoices;
@@ -13,9 +14,10 @@ public class Invoice {
     public Invoice() {
     }
 
-    public Invoice(int id, String payDate, User user, Customer customer, ArrayList<FoodItemInvoice> foodItemInvoices, ArrayList<Ticket> tickets) {
+    public Invoice(int id, String payDate, int totalPrice, User user, Customer customer, ArrayList<FoodItemInvoice> foodItemInvoices, ArrayList<Ticket> tickets) {
         this.id = id;
         this.payDate = payDate;
+        this.totalPrice = totalPrice;
         this.user = user;
         this.customer = customer;
         this.foodItemInvoices = foodItemInvoices;
@@ -37,6 +39,15 @@ public class Invoice {
     public void setPayDate(String payDate) {
         this.payDate = payDate;
     }
+
+    public int getTotalPrice() {
+        return totalPrice;
+    }
+
+    public void setTotalPrice(int totalPrice) {
+        this.totalPrice = totalPrice;
+    }
+
 
     public User getUser() {
         return user;

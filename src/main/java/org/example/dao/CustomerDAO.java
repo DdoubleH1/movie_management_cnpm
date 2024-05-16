@@ -3,7 +3,6 @@ package org.example.dao;
 import org.example.constant.SearchOption;
 import org.example.model.Customer;
 
-import java.sql.Array;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -43,12 +42,50 @@ public class CustomerDAO extends DAO {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 Customer customer = new Customer(rs.getInt("id"), rs.getString("fullName"), rs.getString("address"), rs.getInt("age"), rs.getString("phoneNumber"));
+                customer.setMembershipPoint(getMembershipPoint(customer));
                 customers.add(customer);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         return customers;
+    }
+
+    public int getMembershipPoint(Customer customer) {
+        int membershipPoint = 0;
+        String queryTotalPurchase = "SELECT SUM(tblfooditeminvoice.quantity * tblfooditemdetail.price) AS membership_point " +
+                "FROM tblinvoice " +
+                "JOIN tblfooditeminvoice ON tblinvoice.id = tblfooditeminvoice.invoiceID " +
+                "JOIN tblfooditemdetail ON tblfooditeminvoice.foodItemID = tblfooditemdetail.foodItemID AND tblfooditeminvoice.size = tblfooditemdetail.size " +
+                "WHERE tblinvoice.customerID = ?";
+        try {
+            PreparedStatement ps = con.prepareStatement(queryTotalPurchase);
+            ps.setInt(1, customer.getId());
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                membershipPoint = rs.getInt("membership_point");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        String queryExchange = "SELECT SUM(tblfooditeminvoice.exchangeQuantity * tblfooditemdetail.price) AS membership_point " +
+                "FROM tblinvoice " +
+                "JOIN tblfooditeminvoice ON tblinvoice.id = tblfooditeminvoice.invoiceID " +
+                "JOIN tblfooditemdetail ON tblfooditeminvoice.foodItemID = tblfooditemdetail.foodItemID AND tblfooditeminvoice.size = tblfooditemdetail.size " +
+                "WHERE tblinvoice.customerID = ? AND tblfooditeminvoice.exchangeQuantity > 0";
+        try {
+            PreparedStatement ps = con.prepareStatement(queryExchange);
+            ps.setInt(1, customer.getId());
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                membershipPoint -= rs.getInt("membership_point");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        System.out.println(membershipPoint);
+        return (int) (membershipPoint * 0.1);
     }
 
     public Customer getCustomerById(int customerId) {

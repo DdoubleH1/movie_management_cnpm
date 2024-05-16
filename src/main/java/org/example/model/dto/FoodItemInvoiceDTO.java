@@ -47,4 +47,14 @@ public class FoodItemInvoiceDTO {
     public void setPrice(int price) {
         this.price = price;
     }
+
+    @Override
+    public String toString() {
+        return "FoodItemInvoiceDTO{" +
+                "id=" + id +
+                ", size='" + size + '\'' +
+                ", foodItemName='" + foodItemName + '\'' +
+                ", price=" + price +
+                '}';
+    }
 }

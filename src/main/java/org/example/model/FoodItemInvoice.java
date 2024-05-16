@@ -4,24 +4,16 @@ public class FoodItemInvoice {
     private int id;
     private String size;
     private int quantity;
-    private boolean isExchangeByMembership;
+    private int exchangeQuantity;
     private FoodItem foodItem;
 
     public FoodItemInvoice() {
     }
 
-    public FoodItemInvoice(String size, int quantity, boolean isExchangeByMembership, FoodItem foodItem) {
+    public FoodItemInvoice(String size, int quantity, int exchangeQuantity, FoodItem foodItem) {
         this.size = size;
         this.quantity = quantity;
-        this.isExchangeByMembership = isExchangeByMembership;
-        this.foodItem = foodItem;
-    }
-
-    public FoodItemInvoice(int id, String size, int quantity, boolean isExchangeByMembership, FoodItem foodItem) {
-        this.id = id;
-        this.size = size;
-        this.quantity = quantity;
-        this.isExchangeByMembership = isExchangeByMembership;
+        this.exchangeQuantity = exchangeQuantity;
         this.foodItem = foodItem;
     }
 
@@ -49,12 +41,12 @@ public class FoodItemInvoice {
         this.quantity = quantity;
     }
 
-    public boolean isExchangeByMembership() {
-        return isExchangeByMembership;
+    public int getExchangeQuantity() {
+        return exchangeQuantity;
     }
 
-    public void setExchangeByMembership(boolean exchangeByMembership) {
-        isExchangeByMembership = exchangeByMembership;
+    public void setExchangeQuantity(int exchangeQuantity) {
+        this.exchangeQuantity = exchangeQuantity;
     }
 
     public FoodItem getFoodItem() {

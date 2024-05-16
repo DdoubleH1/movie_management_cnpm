@@ -27,6 +27,7 @@ public class SellFoodFrm extends JFrame implements ActionListener {
     private ArrayList<FoodItem> searchFoodItem;
     private Invoice invoice;
     private User user;
+    private int foodItemInvoiceId = 1;
 
     private final ArrayList<FoodItemInvoice> foodItemInvoices = new ArrayList<>();
     private final FoodItemDAO foodItemDAO = new FoodItemDAO();
@@ -117,8 +118,9 @@ public class SellFoodFrm extends JFrame implements ActionListener {
         try{
             int quantity = Integer.parseInt(quantityTextField.getText());
             String size = sizeTextField.getText();
-            FoodItemInvoice foodItemInvoice = new FoodItemInvoice(size, quantity, false, foodItem);
+            FoodItemInvoice foodItemInvoice = new FoodItemInvoice(size, quantity, 0, foodItem);
             if(foodItemDetailDAO.checkQuantity(foodItemInvoice)){
+                foodItemInvoice.setId(foodItemInvoiceId++);
                 foodItemInvoices.add(foodItemInvoice);
                 JOptionPane.showMessageDialog(this, "Food item added to invoice successfully");
                 sizeTextField.setText("");

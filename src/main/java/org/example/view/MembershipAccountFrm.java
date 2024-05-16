@@ -27,6 +27,7 @@ public class MembershipAccountFrm extends JFrame implements ActionListener {
     private User user;
     private Invoice invoice;
     private SearchOption searchOption = SearchOption.FULL_NAME;
+    ArrayList<Customer> searchCustomers = new ArrayList<>();
     private final CustomerDAO customerDAO = new CustomerDAO();
 
     public MembershipAccountFrm(Invoice invoice) {
@@ -98,7 +99,8 @@ public class MembershipAccountFrm extends JFrame implements ActionListener {
         if (keyword.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Please enter a keyword to search");
         } else {
-            bindCustomersToTable(customerDAO.searchCustomer(keyword, this.searchOption));
+            searchCustomers = customerDAO.searchCustomer(keyword, this.searchOption);
+            bindCustomersToTable(searchCustomers);
         }
 
     }
@@ -109,11 +111,12 @@ public class MembershipAccountFrm extends JFrame implements ActionListener {
             JOptionPane.showMessageDialog(this, "Please select a customer to continue");
         } else {
             int customerId = (int) customerResultTable.getValueAt(selectedRow, 0);
-            String fullName = (String) customerResultTable.getValueAt(selectedRow, 1);
-            String address = (String) customerResultTable.getValueAt(selectedRow, 2);
-            int age = (int) customerResultTable.getValueAt(selectedRow, 3);
-            String phoneNumber = (String) customerResultTable.getValueAt(selectedRow, 4);
-            this.invoice.setCustomer(new Customer(customerId, fullName, address, age, phoneNumber));
+            for(Customer customer: searchCustomers){
+                if(customer.getId() == customerId){
+                    this.invoice.setCustomer(customer);
+                    break;
+                }
+            }
             ExchangeMembershipPointFrm exchangeMembershipPointFrm = new ExchangeMembershipPointFrm(this.invoice);
             exchangeMembershipPointFrm.setVisible(true);
             this.dispose();

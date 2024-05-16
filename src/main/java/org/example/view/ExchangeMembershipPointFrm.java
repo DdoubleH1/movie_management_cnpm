@@ -26,6 +26,7 @@ public class ExchangeMembershipPointFrm extends JFrame implements ActionListener
     private JLabel customerInfoLabel;
     private Invoice invoice;
     private final InvoiceDAO invoiceDAO = new InvoiceDAO();
+    private final ArrayList<FoodItemInvoiceDTO> exchangeFoodItemInvoice = new ArrayList<>();
 
 
     public ExchangeMembershipPointFrm(Invoice invoice) {
@@ -36,7 +37,7 @@ public class ExchangeMembershipPointFrm extends JFrame implements ActionListener
 
     private void initUI() {
         setTitle("Exchange Membership Point");
-        customerInfoLabel.setText(invoice.getCustomer().getFullName() + " - Membership point: " + invoiceDAO.getMembershipPoint(invoice));
+        customerInfoLabel.setText(invoice.getCustomer().getFullName() + " - Membership point: " + invoice.getCustomer().getMembershipPoint() + " points");
         setSize(1000, 800);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -68,27 +69,24 @@ public class ExchangeMembershipPointFrm extends JFrame implements ActionListener
             columnModel.getColumn(i).setPreferredWidth(TableConstant.FOOD_ITEM_INVOICE_COLUMN_WIDTHS[i]);
         }
 
-        this.foodTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        this.foodTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
     }
 
     private ArrayList<FoodItemInvoiceDTO> getFoodItemInvoices(ArrayList<FoodItemInvoice> foodItemInvoices) {
         ArrayList<FoodItemInvoiceDTO> foodItemInvoiceDTOS = new ArrayList<>();
-        int id = 1;
         for (FoodItemInvoice foodItemInvoice : foodItemInvoices) {
             FoodItemInvoiceDTO dto = invoiceDAO.getFoodItemInvoicesDTO(foodItemInvoice);
             if (foodItemInvoice.getQuantity() > 1) {
                 for (int i = 1; i <= foodItemInvoice.getQuantity(); i++) {
                     FoodItemInvoiceDTO newDto = new FoodItemInvoiceDTO();
-                    newDto.setId(id++);
+                    newDto.setId(dto.getId());
                     newDto.setSize(dto.getSize());
                     newDto.setFoodItemName(dto.getFoodItemName());
                     newDto.setPrice(dto.getPrice());
                     foodItemInvoiceDTOS.add(newDto);
                 }
             } else {
-                dto.setId(id++);
                 foodItemInvoiceDTOS.add(dto);
-
             }
         }
         return foodItemInvoiceDTOS;
@@ -96,10 +94,32 @@ public class ExchangeMembershipPointFrm extends JFrame implements ActionListener
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == exchangePointButton) {
+            exchangePointButtonClicked();
+        } else if (e.getSource() == cancelButton) {
+//            cancelButtonClicked();
+        } else if (e.getSource() == nextButton) {
+//            nextButtonClicked();
+        }
+    }
+
+    private void exchangePointButtonClicked() {
+        int[] selectedRows = foodTable.getSelectedRows();
+        if (selectedRows.length == 0) {
+            JOptionPane.showMessageDialog(this, "Please select at least one food item to exchange membership point");
+            return;
+        }
+
+        for (int selectedRow : selectedRows) {
+            int foodItemId = (int) foodTable.getValueAt(selectedRow, 0);
+            String size = (String) foodTable.getValueAt(selectedRow, 1);
+            for(FoodItemInvoice foodItemInvoice: invoice.getFoodItemInvoices()){
+                if(foodItemInvoice.getFoodItem().getId() == foodItemId && foodItemInvoice.getSize().equals(size)){
+                }
+            }
+        }
 
     }
 
-    private void createUIComponents() {
-        // TODO: place custom component creation code here
-    }
+
 }
