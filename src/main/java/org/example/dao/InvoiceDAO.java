@@ -1,6 +1,5 @@
 package org.example.dao;
 
-import org.example.model.FoodItem;
 import org.example.model.FoodItemInvoice;
 import org.example.model.Invoice;
 import org.example.model.dto.FoodItemInvoiceDTO;
@@ -8,7 +7,6 @@ import org.example.model.dto.FoodItemInvoiceDTO;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.ArrayList;
 
 public class InvoiceDAO extends DAO {
 
@@ -39,7 +37,7 @@ public class InvoiceDAO extends DAO {
             PreparedStatement ps = con.prepareStatement(query);
             ps.setInt(1, invoice.getCustomer().getId());
             ps.setString(2, invoice.getPayDate());
-            ps.setInt(3, invoice.getUserId());
+            ps.setInt(3, invoice.getUser().getId());
             ps.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
@@ -47,35 +45,62 @@ public class InvoiceDAO extends DAO {
         return invoice;
     }
 
-    public ArrayList<FoodItemInvoiceDTO> getFoodItemInvoicesByInvoiceId(Invoice invoice) {
-        ArrayList<FoodItemInvoiceDTO> foodItemInvoices = new ArrayList<>();
-        // Get all food item invoices by invoice id and replace food item id with food item name
+    public FoodItemInvoiceDTO getFoodItemInvoicesDTO(FoodItemInvoice foodItemInvoice) {
 
-        String query = "SELECT * FROM tblfooditeminvoice " +
-                "JOIN tblfooditem ON tblfooditeminvoice.foodItemID = tblfooditem.id " +
-                "JOIN tblfooditemdetail ON tblfooditeminvoice.foodItemID = tblfooditemdetail.foodItemID AND tblfooditeminvoice.size = tblfooditemdetail.size "+
-                "WHERE invoiceID = ?";
+        FoodItemInvoiceDTO foodItemInvoiceDTO = new FoodItemInvoiceDTO();
+        String query = "SELECT tblfooditemdetail.price from tblfooditemdetail " +
+                "JOIN tblfooditeminvoice ON tblfooditemdetail.foodItemID = tblfooditeminvoice.foodItemID AND tblfooditemdetail.size = tblfooditeminvoice.size ";
         try {
             PreparedStatement ps = con.prepareStatement(query);
-            ps.setInt(1, invoice.getId());
             ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                FoodItemInvoiceDTO foodItemInvoice = new FoodItemInvoiceDTO();
-                foodItemInvoice.setId(rs.getInt("id"));
-                foodItemInvoice.setFoodItemName(rs.getString("name"));
-                foodItemInvoice.setSize(rs.getString("size"));
-                foodItemInvoice.setPrice(rs.getInt("price"));
-                if (rs.getInt("quantity") > 1) {
-                    for (int i = 0; i < rs.getInt("quantity"); i++) {
-                        foodItemInvoices.add(foodItemInvoice);
-                    }
-                } else {
-                    foodItemInvoices.add(foodItemInvoice);
-                }
+            if (rs.next()) {
+                foodItemInvoiceDTO.setId(foodItemInvoice.getId());
+                foodItemInvoiceDTO.setSize(foodItemInvoice.getSize());
+                foodItemInvoiceDTO.setFoodItemName(foodItemInvoice.getFoodItem().getName());
+                foodItemInvoiceDTO.setPrice(rs.getInt("price"));
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return foodItemInvoices;
+
+        return foodItemInvoiceDTO;
+
+
+    }
+
+    public int getMembershipPoint(Invoice invoice) {
+        int membershipPoint = 0;
+        String queryTotalPurchase = "SELECT SUM(tblfooditeminvoice.quantity * tblfooditemdetail.price) AS membership_point " +
+                "FROM tblinvoice " +
+                "JOIN tblfooditeminvoice ON tblinvoice.id = tblfooditeminvoice.invoiceID " +
+                "JOIN tblfooditemdetail ON tblfooditeminvoice.foodItemID = tblfooditemdetail.foodItemID AND tblfooditeminvoice.size = tblfooditemdetail.size " +
+                "WHERE tblinvoice.customerID = ?";
+        try {
+            PreparedStatement ps = con.prepareStatement(queryTotalPurchase);
+            ps.setInt(1, invoice.getCustomer().getId());
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                membershipPoint = rs.getInt("membership_point");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        String queryExchange = "SELECT SUM(tblfooditeminvoice.quantity * tblfooditemdetail.price) AS membership_point " +
+                "FROM tblinvoice " +
+                "JOIN tblfooditeminvoice ON tblinvoice.id = tblfooditeminvoice.invoiceID " +
+                "JOIN tblfooditemdetail ON tblfooditeminvoice.foodItemID = tblfooditemdetail.foodItemID AND tblfooditeminvoice.size = tblfooditemdetail.size " +
+                "WHERE tblinvoice.customerID = ? AND tblfooditeminvoice.isExchangeByMembership = 1";
+        try {
+            PreparedStatement ps = con.prepareStatement(queryExchange);
+            ps.setInt(1, invoice.getCustomer().getId());
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                membershipPoint -= rs.getInt("membership_point");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return membershipPoint;
     }
 }

@@ -24,8 +24,10 @@ public class SellFoodFrm extends JFrame implements ActionListener {
     private JTextField sizeTextField;
     private JTextField quantityTextField;
     private JButton addToInvoiceButton;
+    private ArrayList<FoodItem> searchFoodItem;
     private Invoice invoice;
     private User user;
+
     private final ArrayList<FoodItemInvoice> foodItemInvoices = new ArrayList<>();
     private final FoodItemDAO foodItemDAO = new FoodItemDAO();
     private final FoodItemDetailDAO foodItemDetailDAO = new FoodItemDetailDAO();
@@ -93,7 +95,8 @@ public class SellFoodFrm extends JFrame implements ActionListener {
            JOptionPane.showMessageDialog(this, "Please enter a food name to search");
         }
         else{
-            bindFoodItemsToTable(foodItemDAO.searchFoodItem(foodName));
+            searchFoodItem = foodItemDAO.searchFoodItem(foodName);
+            bindFoodItemsToTable(searchFoodItem);
         }
     }
 
@@ -103,26 +106,37 @@ public class SellFoodFrm extends JFrame implements ActionListener {
             JOptionPane.showMessageDialog(this, "Please select a food item to add to the invoice");
             return;
         }
-
+        FoodItem foodItem = new FoodItem();
         int foodItemId = Integer.parseInt(foodResultTable.getValueAt(selectedRow, 0).toString());
-        String foodName = foodResultTable.getValueAt(selectedRow, 1).toString();
-        String foodType = foodResultTable.getValueAt(selectedRow, 2).toString();
-        FoodItem foodItem = new FoodItem(foodItemId, foodName, foodType, foodItemDetailDAO.getFoodItemDetailByFoodItemId(foodItemId));
-        int quantity = Integer.parseInt(quantityTextField.getText());
-        String size = sizeTextField.getText();
-        FoodItemInvoice foodItemInvoice = new FoodItemInvoice(0, size, quantity, false, foodItem);
-        if(foodItemDetailDAO.checkQuantity(foodItemInvoice)){
-            foodItemInvoices.add(foodItemInvoice);
-            JOptionPane.showMessageDialog(this, "Food item added to invoice");
+        for(FoodItem fi: searchFoodItem){
+            if(fi.getId() == foodItemId){
+                foodItem = fi;
+                break;
+        }}
+
+        try{
+            int quantity = Integer.parseInt(quantityTextField.getText());
+            String size = sizeTextField.getText();
+            FoodItemInvoice foodItemInvoice = new FoodItemInvoice(size, quantity, false, foodItem);
+            if(foodItemDetailDAO.checkQuantity(foodItemInvoice)){
+                foodItemInvoices.add(foodItemInvoice);
+                JOptionPane.showMessageDialog(this, "Food item added to invoice successfully");
+                sizeTextField.setText("");
+                quantityTextField.setText("");
+            }
+            else{
+                JOptionPane.showMessageDialog(this, "Remaining quantity is not enough");
+            }
         }
-        else{
-            JOptionPane.showMessageDialog(this, "Remaining quantity is not enough");
+        catch (NumberFormatException e){
+            JOptionPane.showMessageDialog(this, "Quantity must be a number");
         }
+
     }
 
     private void processPaymentClicked() {
         invoice.setFoodItemInvoices(foodItemInvoices);
-        (new MembershipAccountFrm(user, invoice)).setVisible(true);
+        (new MembershipAccountFrm(invoice)).setVisible(true);
         this.dispose();
     }
 }

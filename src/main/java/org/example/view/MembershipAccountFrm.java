@@ -29,8 +29,7 @@ public class MembershipAccountFrm extends JFrame implements ActionListener {
     private SearchOption searchOption = SearchOption.FULL_NAME;
     private final CustomerDAO customerDAO = new CustomerDAO();
 
-    public MembershipAccountFrm(User user, Invoice invoice) {
-        this.user = user;
+    public MembershipAccountFrm(Invoice invoice) {
         this.invoice = invoice;
         initUI();
         bindingActionListener();

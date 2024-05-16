@@ -6,16 +6,18 @@ public class Customer {
     private String address;
     private int age;
     private String phoneNumber;
+    private int membershipPoint;
+
 
     public Customer() {
     }
 
-    public Customer(String fullName, String address, int age, String phoneNumber) {
+    public Customer(String fullName, String address, int age, String phoneNumber, int membershipPoint) {
         this.fullName = fullName;
         this.address = address;
         this.age = age;
         this.phoneNumber = phoneNumber;
-
+        this.membershipPoint = membershipPoint;
     }
 
     public Customer(int id, String fullName, String address, int age, String phoneNumber) {
@@ -67,5 +69,12 @@ public class Customer {
         this.phoneNumber = phoneNumber;
     }
 
+    public int getMembershipPoint() {
+        return membershipPoint;
+    }
+
+    public void setMembershipPoint(int membershipPoint) {
+        this.membershipPoint = membershipPoint;
+    }
 
 }

@@ -10,6 +10,13 @@ public class FoodItemInvoice {
     public FoodItemInvoice() {
     }
 
+    public FoodItemInvoice(String size, int quantity, boolean isExchangeByMembership, FoodItem foodItem) {
+        this.size = size;
+        this.quantity = quantity;
+        this.isExchangeByMembership = isExchangeByMembership;
+        this.foodItem = foodItem;
+    }
+
     public FoodItemInvoice(int id, String size, int quantity, boolean isExchangeByMembership, FoodItem foodItem) {
         this.id = id;
         this.size = size;

@@ -12,6 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class SellerHomeFrm extends JFrame implements ActionListener {
+    private JLabel sellerHomeTitle;
     private JPanel sellerHomeView;
     private JButton sellFoodButton;
     private JButton sellComboButton;
