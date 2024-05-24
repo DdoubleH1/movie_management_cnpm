@@ -1,20 +1,24 @@
 package org.example.model;
 
+import java.util.Objects;
+
 public class FoodItemInvoice {
     private int id;
     private String size;
     private int quantity;
     private int exchangeQuantity;
     private FoodItem foodItem;
+    private int unitPrice;
 
     public FoodItemInvoice() {
     }
 
-    public FoodItemInvoice(String size, int quantity, int exchangeQuantity, FoodItem foodItem) {
+    public FoodItemInvoice(String size, int quantity, int exchangeQuantity, FoodItem foodItem, int unitPrice) {
         this.size = size;
         this.quantity = quantity;
         this.exchangeQuantity = exchangeQuantity;
         this.foodItem = foodItem;
+        this.unitPrice = unitPrice;
     }
 
     public int getId() {
@@ -55,5 +59,33 @@ public class FoodItemInvoice {
 
     public void setFoodItem(FoodItem foodItem) {
         this.foodItem = foodItem;
+    }
+
+    public int getUnitPrice() {
+        return unitPrice;
+    }
+
+    public void setUnitPrice(int unitPrice) {
+        this.unitPrice = unitPrice;
+    }
+
+    @Override
+    public String toString() {
+        return "FoodItemInvoice{" +
+                "id=" + id +
+                ", size='" + size + '\'' +
+                ", quantity=" + quantity +
+                ", exchangeQuantity=" + exchangeQuantity +
+                ", foodItem=" + foodItem +
+                ", unitPrice=" + unitPrice +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        FoodItemInvoice that = (FoodItemInvoice) o;
+        return Objects.equals(foodItem, that.foodItem);
     }
 }

@@ -13,24 +13,37 @@ public class CustomerDAO extends DAO {
         super();
     }
 
-    public Customer addCustomer(Customer customer) {
-        String query = "INSERT INTO tblcustomer (fullName, address, age, phoneNumber) VALUES (?, ?, ?, ?)";
+    public boolean addCustomer(Customer customer) {
+        boolean result = true;
+        //check if customer already exists
+        String query = "SELECT * FROM tblcustomer WHERE fullName = ? AND address = ? AND age = ? AND phoneNumber = ?";
         try {
-            PreparedStatement ps = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+            PreparedStatement ps = con.prepareStatement(query);
             ps.setString(1, customer.getFullName());
             ps.setString(2, customer.getAddress());
             ps.setInt(3, customer.getAge());
             ps.setString(4, customer.getPhoneNumber());
-            ps.executeUpdate();
-
-            ResultSet generatedKeys = ps.getGeneratedKeys();
-            if (generatedKeys.next()) {
-                customer.setId(generatedKeys.getInt(1));
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                result = false;
+            }
+            else {
+                String insertQuery = "INSERT INTO tblcustomer (fullName, address, age, phoneNumber) VALUES (?, ?, ?, ?)";
+                PreparedStatement psInsert = con.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS);
+                psInsert.setString(1, customer.getFullName());
+                psInsert.setString(2, customer.getAddress());
+                psInsert.setInt(3, customer.getAge());
+                psInsert.setString(4, customer.getPhoneNumber());
+                psInsert.executeUpdate();
+                ResultSet generatedKeys = psInsert.getGeneratedKeys();
+                if (generatedKeys.next()) {
+                    customer.setId(generatedKeys.getInt(1));
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return customer;
+        return result;
     }
 
     public ArrayList<Customer> searchCustomer(String keyword, SearchOption searchOption) {
@@ -42,7 +55,31 @@ public class CustomerDAO extends DAO {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 Customer customer = new Customer(rs.getInt("id"), rs.getString("fullName"), rs.getString("address"), rs.getInt("age"), rs.getString("phoneNumber"));
-                customer.setMembershipPoint(getMembershipPoint(customer));
+
+                // Calculate membership points
+                String queryTotal = "SELECT SUM((tblfooditeminvoice.quantity - tblfooditeminvoice.exchangeQuantity) * tblfooditemdetail.price) AS total " +
+                        "FROM tblinvoice " +
+                        "JOIN tblfooditeminvoice ON tblinvoice.id = tblfooditeminvoice.invoiceID " +
+                        "JOIN tblfooditemdetail ON tblfooditeminvoice.foodItemID = tblfooditemdetail.foodItemID AND tblfooditeminvoice.size = tblfooditemdetail.size " +
+                        "WHERE tblinvoice.customerID = ?";
+                PreparedStatement psTotal = con.prepareStatement(queryTotal);
+                psTotal.setInt(1, customer.getId());
+                ResultSet rsTotal = psTotal.executeQuery();
+                rsTotal.next();
+                int total = rsTotal.getInt("total");
+
+                String queryExchange = "SELECT SUM(tblfooditeminvoice.exchangeQuantity * tblfooditemdetail.price) AS total " +
+                        "FROM tblinvoice " +
+                        "JOIN tblfooditeminvoice ON tblinvoice.id = tblfooditeminvoice.invoiceID " +
+                        "JOIN tblfooditemdetail ON tblfooditeminvoice.foodItemID = tblfooditemdetail.foodItemID AND tblfooditeminvoice.size = tblfooditemdetail.size " +
+                        "WHERE tblinvoice.customerID = ? AND tblfooditeminvoice.exchangeQuantity > 0";
+                PreparedStatement psExchange = con.prepareStatement(queryExchange);
+                psExchange.setInt(1, customer.getId());
+                ResultSet rsExchange = psExchange.executeQuery();
+                rsExchange.next();
+                int exchange = rsExchange.getInt("total");
+                int membershipPoint = (int) ((total - exchange) * 0.1);
+                customer.setMembershipPoint(membershipPoint);
                 customers.add(customer);
             }
         } catch (Exception e) {
@@ -51,58 +88,6 @@ public class CustomerDAO extends DAO {
         return customers;
     }
 
-    public int getMembershipPoint(Customer customer) {
-        int membershipPoint = 0;
-        String queryTotalPurchase = "SELECT SUM(tblfooditeminvoice.quantity * tblfooditemdetail.price) AS membership_point " +
-                "FROM tblinvoice " +
-                "JOIN tblfooditeminvoice ON tblinvoice.id = tblfooditeminvoice.invoiceID " +
-                "JOIN tblfooditemdetail ON tblfooditeminvoice.foodItemID = tblfooditemdetail.foodItemID AND tblfooditeminvoice.size = tblfooditemdetail.size " +
-                "WHERE tblinvoice.customerID = ?";
-        try {
-            PreparedStatement ps = con.prepareStatement(queryTotalPurchase);
-            ps.setInt(1, customer.getId());
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                membershipPoint = rs.getInt("membership_point");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        String queryExchange = "SELECT SUM(tblfooditeminvoice.exchangeQuantity * tblfooditemdetail.price) AS membership_point " +
-                "FROM tblinvoice " +
-                "JOIN tblfooditeminvoice ON tblinvoice.id = tblfooditeminvoice.invoiceID " +
-                "JOIN tblfooditemdetail ON tblfooditeminvoice.foodItemID = tblfooditemdetail.foodItemID AND tblfooditeminvoice.size = tblfooditemdetail.size " +
-                "WHERE tblinvoice.customerID = ? AND tblfooditeminvoice.exchangeQuantity > 0";
-        try {
-            PreparedStatement ps = con.prepareStatement(queryExchange);
-            ps.setInt(1, customer.getId());
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                membershipPoint -= rs.getInt("membership_point");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        System.out.println(membershipPoint);
-        return (int) (membershipPoint * 0.1);
-    }
-
-    public Customer getCustomerById(int customerId) {
-        Customer customer = null;
-        String query = "SELECT * FROM tblcustomer WHERE id = ?";
-        try {
-            PreparedStatement ps = con.prepareStatement(query);
-            ps.setInt(1, customerId);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                customer = new Customer(rs.getInt("id"), rs.getString("fullName"), rs.getString("address"), rs.getInt("age"), rs.getString("phoneNumber"));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return customer;
-    }
 }
 
 

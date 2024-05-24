@@ -59,7 +59,7 @@
             <properties/>
             <border type="none"/>
             <children>
-              <component id="c7bc1" class="javax.swing.JTable" binding="foodResultTable">
+              <component id="c7bc1" class="org.example.view.component.Table" binding="foodResultTable" custom-create="true">
                 <constraints/>
                 <properties/>
               </component>

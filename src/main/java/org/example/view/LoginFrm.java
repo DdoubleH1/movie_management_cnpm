@@ -42,7 +42,7 @@ public class LoginFrm extends JFrame implements ActionListener {
             user.setPassword(new String(passwordTextField.getPassword()));
 
             UserDAO userDAO = new UserDAO();
-            if(userDAO.checkLogin(user) != null){
+            if(userDAO.checkLogin(user)){
                 JOptionPane.showMessageDialog(this, "Login success");
                 (new SellerHomeFrm(user)).setVisible(true);
                 this.dispose();

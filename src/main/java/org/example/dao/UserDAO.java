@@ -4,6 +4,7 @@ import org.example.model.User;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 
 public class UserDAO extends DAO {
 
@@ -11,7 +12,7 @@ public class UserDAO extends DAO {
         super();
     }
 
-    public User checkLogin(User user) {
+    public boolean checkLogin(User user) {
 
         String sql = "SELECT * FROM tblUser WHERE username = ? AND password = ?";
         try {
@@ -23,12 +24,14 @@ public class UserDAO extends DAO {
                 user.setId(rs.getInt("id"));
                 user.setFullName(rs.getString("fullName"));
                 user.setPosition(rs.getString("position"));
-
+                return true;
             }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return user;
+
+        return false;
     }
 
 }

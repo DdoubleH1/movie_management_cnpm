@@ -13,23 +13,6 @@ public class FoodItemDAO extends DAO {
         super();
     }
 
-//    public ArrayList<FoodItem> getAllFoodItems() {
-//        ArrayList<FoodItem> result = new ArrayList<>();
-//        String sql = "SELECT * FROM tblfooditem";
-//        try {
-//            PreparedStatement ps = con.prepareStatement(sql);
-//            ResultSet rs = ps.executeQuery();
-//            while (rs.next()) {
-//                FoodItem foodItem = new FoodItem(rs.getInt("id"), rs.getString("name"), rs.getString("type"));
-//                result.add(foodItem);
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        return result;
-//    }
-
-
     public ArrayList<FoodItem> searchFoodItem(String foodName) {
         ArrayList<FoodItem> result = new ArrayList<>();
         String sqlFoodItem = "SELECT * FROM tblfooditem WHERE name LIKE ?";

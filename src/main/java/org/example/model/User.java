@@ -61,6 +61,15 @@ public class User implements Serializable {
         this.position = position;
     }
 
-
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", fullName='" + fullName + '\'' +
+                ", position='" + position + '\'' +
+                '}';
+    }
 }
 

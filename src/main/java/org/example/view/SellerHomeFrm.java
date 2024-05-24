@@ -17,7 +17,8 @@ public class SellerHomeFrm extends JFrame implements ActionListener {
     private JButton sellFoodButton;
     private JButton sellComboButton;
     private JLabel welcomeTextField;
-    private User user;
+    private JButton sellTicketButton;
+    private final User user;
     private Invoice invoice;
     private final InvoiceDAO invoiceDAO = new InvoiceDAO();
 
@@ -33,11 +34,6 @@ public class SellerHomeFrm extends JFrame implements ActionListener {
         // Set the pay date to the current date and format int pattern yyyy-MM-dd HH:mm:ss
         invoice.setPayDate(getCurrentDate());
         invoice.setUser(this.user);
-        try{
-            invoiceDAO.addInvoice(invoice);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     private void initUI() {
@@ -58,17 +54,15 @@ public class SellerHomeFrm extends JFrame implements ActionListener {
     private String getCurrentDate() {
         // Create a new Date object for the current date and time
         Date payDate = new Date();
-
         // Create a SimpleDateFormat object for the desired format
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
         return formatter.format(payDate);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == sellFoodButton) {
-            (new SellFoodFrm(this.user, this.invoice)).setVisible(true);
+            (new SellFoodFrm(this.invoice)).setVisible(true);
             this.dispose();
         }
 //        else if (e.getSource() == sellComboButton) {

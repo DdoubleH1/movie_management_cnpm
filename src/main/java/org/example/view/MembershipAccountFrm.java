@@ -7,11 +7,9 @@ import org.example.dao.CustomerDAO;
 import org.example.mapper.TableMapper;
 import org.example.model.Customer;
 import org.example.model.Invoice;
-import org.example.model.User;
+import org.example.view.component.Table;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumnModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -21,10 +19,10 @@ public class MembershipAccountFrm extends JFrame implements ActionListener {
     private JTextField searchTexfield;
     private JComboBox<SearchOption> searchOptionComboBox;
     private JButton searchButton;
-    private JTable customerResultTable;
+    private Table customerResultTable;
     private JButton nextButton;
     private JButton addNewAccountButton;
-    private User user;
+    private JButton cancelButton;
     private Invoice invoice;
     private SearchOption searchOption = SearchOption.FULL_NAME;
     ArrayList<Customer> searchCustomers = new ArrayList<>();
@@ -50,30 +48,11 @@ public class MembershipAccountFrm extends JFrame implements ActionListener {
     private void bindingActionListener() {
         searchButton.addActionListener(this);
         searchOptionComboBox.addActionListener(this);
-
         nextButton.addActionListener(this);
         addNewAccountButton.addActionListener(this);
+        cancelButton.addActionListener(this);
     }
 
-    private void bindCustomersToTable(ArrayList<Customer> customers) {
-        // Convert the food items to a 2D array
-        Object[][] data = TableMapper.customerToTable(customers);
-
-        // Create a new table model
-        DefaultTableModel model = new DefaultTableModel(data, TableColumn.CUSTOMER_COLUMN);
-
-        // Set the model on foodResultTable
-        this.customerResultTable.setModel(model);
-
-        TableColumnModel columnModel = customerResultTable.getColumnModel();
-
-        // Set the preferred width for each column
-        for (int i = 0; i < columnModel.getColumnCount(); i++) {
-            columnModel.getColumn(i).setPreferredWidth(TableConstant.CUSTOMER_COLUMN_WIDTHS[i]);
-        }
-
-        this.customerResultTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -85,6 +64,9 @@ public class MembershipAccountFrm extends JFrame implements ActionListener {
             nextButtonClick();
         } else if (e.getSource() == addNewAccountButton) {
             addNewAccountButtonClick();
+        } else if (e.getSource() == cancelButton) {
+            (new SellFoodFrm(this.invoice)).setVisible(true);
+            this.dispose();
         }
 
     }
@@ -100,19 +82,18 @@ public class MembershipAccountFrm extends JFrame implements ActionListener {
             JOptionPane.showMessageDialog(this, "Please enter a keyword to search");
         } else {
             searchCustomers = customerDAO.searchCustomer(keyword, this.searchOption);
-            bindCustomersToTable(searchCustomers);
+            customerResultTable.updateTableData(TableMapper.customerToTable(searchCustomers), TableColumn.CUSTOMER_COLUMN);
         }
-
     }
 
-    private void nextButtonClick(){
+    private void nextButtonClick() {
         int selectedRow = customerResultTable.getSelectedRow();
         if (selectedRow == -1) {
             JOptionPane.showMessageDialog(this, "Please select a customer to continue");
         } else {
             int customerId = (int) customerResultTable.getValueAt(selectedRow, 0);
-            for(Customer customer: searchCustomers){
-                if(customer.getId() == customerId){
+            for (Customer customer : searchCustomers) {
+                if (customer.getId() == customerId) {
                     this.invoice.setCustomer(customer);
                     break;
                 }
@@ -129,5 +110,9 @@ public class MembershipAccountFrm extends JFrame implements ActionListener {
         this.dispose();
     }
 
+    private void createUIComponents() {
+        // TODO: place custom component creation code here
+        customerResultTable = new Table(TableMapper.customerToTable(new ArrayList<>()), TableColumn.CUSTOMER_COLUMN, TableConstant.CUSTOMER_COLUMN_WIDTHS, ListSelectionModel.SINGLE_SELECTION);
+    }
 }
 

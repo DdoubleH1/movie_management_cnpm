@@ -12,44 +12,6 @@ public class FoodItemDetailDAO extends DAO {
         super();
     }
 
-
-    //update food item detail when user buy
-    public boolean updateFoodItemDetail(FoodItemInvoice foodItemInvoice) {
-        boolean result = false;
-        String query = "UPDATE tblfooditemdetail SET totalQuantity = totalQuantity - ? WHERE foodItemID = ?";
-        try {
-            PreparedStatement ps = con.prepareStatement(query);
-            ps.setInt(1, foodItemInvoice.getQuantity());
-            ps.setInt(2, foodItemInvoice.getFoodItem().getId());
-            ps.executeUpdate();
-            result = true;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return result;
-    }
-
-    public ArrayList<FoodItemDetail> getFoodItemDetailByFoodItemId(int foodItemId) {
-        ArrayList<FoodItemDetail> foodItemDetails = new ArrayList<>();
-        String query = "SELECT * FROM tblfooditemdetail WHERE foodItemID = ?";
-        try {
-            PreparedStatement ps = con.prepareStatement(query);
-            ps.setInt(1, foodItemId);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                FoodItemDetail foodItemDetail = new FoodItemDetail();
-                foodItemDetail.setId(rs.getInt("id"));
-                foodItemDetail.setSize(rs.getString("size"));
-                foodItemDetail.setTotalQuantity(rs.getInt("totalQuantity"));
-                foodItemDetail.setPrice(rs.getInt("price"));
-                foodItemDetails.add(foodItemDetail);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return foodItemDetails;
-    }
-
     //check if quantity is enough
     public boolean checkQuantity(FoodItemInvoice foodItemInvoice) {
         String query = "SELECT totalQuantity FROM tblfooditemdetail WHERE foodItemID = ? and size = ?";
@@ -60,7 +22,6 @@ public class FoodItemDetailDAO extends DAO {
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 int totalQuantity = rs.getInt("totalQuantity");
-                System.out.println(totalQuantity);
                 if (totalQuantity < foodItemInvoice.getQuantity()) {
                     return false;
                 }

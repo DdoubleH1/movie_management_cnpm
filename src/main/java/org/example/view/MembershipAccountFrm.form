@@ -74,25 +74,12 @@
             <properties/>
             <border type="none"/>
             <children>
-              <component id="72c22" class="javax.swing.JTable" binding="customerResultTable">
+              <component id="72c22" class="org.example.view.component.Table" binding="customerResultTable" custom-create="true">
                 <constraints/>
                 <properties/>
               </component>
             </children>
           </scrollpane>
-          <component id="f6695" class="javax.swing.JButton" binding="nextButton" default-binding="true">
-            <constraints>
-              <grid row="5" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <text value="Next"/>
-            </properties>
-          </component>
-          <vspacer id="45597">
-            <constraints>
-              <grid row="6" column="5" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
-            </constraints>
-          </vspacer>
           <vspacer id="b97a8">
             <constraints>
               <grid row="3" column="5" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
@@ -121,6 +108,22 @@
             </constraints>
             <properties>
               <text value="Add new account"/>
+            </properties>
+          </component>
+          <component id="f6695" class="javax.swing.JButton" binding="nextButton" default-binding="true">
+            <constraints>
+              <grid row="4" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="Next"/>
+            </properties>
+          </component>
+          <component id="4cc02" class="javax.swing.JButton" binding="cancelButton">
+            <constraints>
+              <grid row="5" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="CANCEL"/>
             </properties>
           </component>
         </children>

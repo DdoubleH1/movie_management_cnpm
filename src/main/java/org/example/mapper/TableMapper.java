@@ -3,7 +3,6 @@ package org.example.mapper;
 import org.example.model.Customer;
 import org.example.model.FoodItem;
 import org.example.model.FoodItemInvoice;
-import org.example.model.dto.FoodItemInvoiceDTO;
 
 import java.util.ArrayList;
 
@@ -19,7 +18,7 @@ public class TableMapper {
         return table;
     }
 
-    public static Object[][] customerToTable(ArrayList<Customer> customers){
+    public static Object[][] customerToTable(ArrayList<Customer> customers) {
         Object[][] table = new Object[customers.size()][6];
         for (int i = 0; i < customers.size(); i++) {
             Customer customer = customers.get(i);
@@ -32,15 +31,53 @@ public class TableMapper {
         return table;
     }
 
-    public static Object[][] foodItemInvoiceToTable(ArrayList<FoodItemInvoiceDTO> foodItemInvoices) {
-        Object[][] table = new Object[foodItemInvoices.size()][4];
+
+    public static Object[][] foodItemInvoiceToTable(ArrayList<FoodItemInvoice> foodItemInvoices, boolean isFromExchange) {
+        // get unit price from foodItemDetail
+        int unitPrice = getUnitPrice(foodItemInvoices);
+
+        Object[][] table = new Object[foodItemInvoices.size()][6];
         for (int i = 0; i < foodItemInvoices.size(); i++) {
-            FoodItemInvoiceDTO foodItem = foodItemInvoices.get(i);
-            table[i][0] = foodItem.getId();
-            table[i][1] = foodItem.getFoodItemName();
-            table[i][2] = foodItem.getSize();
-            table[i][3] = foodItem.getPrice();
+            FoodItemInvoice foodItemInvoice = foodItemInvoices.get(i);
+            table[i][0] = foodItemInvoice.getId();
+            table[i][1] = foodItemInvoice.getFoodItem().getName();
+            table[i][2] = foodItemInvoice.getSize();
+            table[i][3] = foodItemInvoice.getQuantity();
+            table[i][4] = foodItemInvoice.getUnitPrice();
+            if (!isFromExchange)
+                table[i][5] = foodItemInvoice.getUnitPrice() * (foodItemInvoice.getQuantity() - foodItemInvoice.getExchangeQuantity());
+            else
+                table[i][5] = foodItemInvoice.getUnitPrice() * foodItemInvoice.getQuantity();
         }
         return table;
+    }
+
+
+
+    private static int getUnitPrice(ArrayList<FoodItemInvoice> foodItemInvoices) {
+        int unitPrice = 0;
+        for (FoodItemInvoice foodItemInvoice : foodItemInvoices) {
+            for (int i = 0; i < foodItemInvoice.getFoodItem().getFoodItemDetailList().size(); i++) {
+                if (foodItemInvoice.getSize().equals(foodItemInvoice.getFoodItem().getFoodItemDetailList().get(i).getSize())) {
+                    unitPrice = foodItemInvoice.getFoodItem().getFoodItemDetailList().get(i).getPrice();
+                }
+            }
+        }
+        return unitPrice;
+    }
+
+    public static ArrayList<FoodItemInvoice> getDisplayFoodItemInvoice(ArrayList<FoodItemInvoice> foodItemInvoices) {
+        ArrayList<FoodItemInvoice> displayFoodItemInvoices = new ArrayList<>();
+        for (FoodItemInvoice foodItemInvoice : foodItemInvoices) {
+            if (foodItemInvoice.getQuantity() > 0) {
+                for (int i = 0; i < foodItemInvoice.getQuantity(); i++) {
+                    displayFoodItemInvoices.add(foodItemInvoice);
+                }
+
+            } else {
+                displayFoodItemInvoices.add(foodItemInvoice);
+            }
+        }
+        return displayFoodItemInvoices;
     }
 }

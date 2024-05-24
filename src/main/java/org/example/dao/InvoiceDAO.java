@@ -2,7 +2,6 @@ package org.example.dao;
 
 import org.example.model.FoodItemInvoice;
 import org.example.model.Invoice;
-import org.example.model.dto.FoodItemInvoiceDTO;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -14,12 +13,14 @@ public class InvoiceDAO extends DAO {
         super();
     }
 
-    public void addInvoice(Invoice invoice) {
-        String query = "INSERT INTO tblinvoice (payDate, userID) VALUES (?, ?)";
+    //update invoice
+    public void save(Invoice invoice) {
+        String query = "INSERT INTO tblinvoice (payDate, customerID, userID) VALUES (?, ?, ?)";
         try {
             PreparedStatement ps = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, invoice.getPayDate());
-            ps.setInt(2, invoice.getUser().getId());
+            ps.setInt(2, invoice.getCustomer().getId());
+            ps.setInt(3, invoice.getUser().getId());
             ps.executeUpdate();
 
             ResultSet generatedKeys = ps.getGeneratedKeys();
@@ -29,76 +30,37 @@ public class InvoiceDAO extends DAO {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    public Invoice updateInvoice(Invoice invoice) {
-        String query = "UPDATE tblinvoice SET customerID = ? WHERE payDate = ? AND userID = ?";
-        try {
-            PreparedStatement ps = con.prepareStatement(query);
-            ps.setInt(1, invoice.getCustomer().getId());
-            ps.setString(2, invoice.getPayDate());
-            ps.setInt(3, invoice.getUser().getId());
-            ps.executeUpdate();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return invoice;
-    }
-
-    public FoodItemInvoiceDTO getFoodItemInvoicesDTO(FoodItemInvoice foodItemInvoice) {
-
-        FoodItemInvoiceDTO foodItemInvoiceDTO = new FoodItemInvoiceDTO();
-        String query = "SELECT tblfooditemdetail.price from tblfooditemdetail " +
-                "JOIN tblfooditeminvoice ON tblfooditemdetail.foodItemID = tblfooditeminvoice.foodItemID AND tblfooditemdetail.size = tblfooditeminvoice.size ";
-        try {
-            PreparedStatement ps = con.prepareStatement(query);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                foodItemInvoiceDTO.setId(foodItemInvoice.getId());
-                foodItemInvoiceDTO.setSize(foodItemInvoice.getSize());
-                foodItemInvoiceDTO.setFoodItemName(foodItemInvoice.getFoodItem().getName());
-                foodItemInvoiceDTO.setPrice(rs.getInt("price"));
+        //add food item invoice
+        for (FoodItemInvoice foodItemInvoice : invoice.getFoodItemInvoices()) {
+            String queryFoodItemInvoice = "INSERT INTO tblfooditeminvoice (invoiceID, foodItemID, size, quantity, exchangeQuantity, unitPrice) VALUES (?, ?, ?, ?, ?, ?)";
+            try {
+                PreparedStatement ps = con.prepareStatement(queryFoodItemInvoice);
+                ps.setInt(1, invoice.getId());
+                ps.setInt(2, foodItemInvoice.getFoodItem().getId());
+                ps.setString(3, foodItemInvoice.getSize());
+                ps.setInt(4, foodItemInvoice.getQuantity());
+                ps.setInt(5, foodItemInvoice.getExchangeQuantity());
+                ps.setInt(6, foodItemInvoice.getUnitPrice());
+                ps.executeUpdate();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
 
-        return foodItemInvoiceDTO;
+        //update food item detail quantity
+        for (FoodItemInvoice foodItemInvoice : invoice.getFoodItemInvoices()) {
+            String queryFoodItemDetail = "UPDATE tblfooditemdetail SET totalQuantity = totalQuantity - ? WHERE foodItemID = ? AND size = ?";
+            try {
+                PreparedStatement ps = con.prepareStatement(queryFoodItemDetail);
+                ps.setInt(1, foodItemInvoice.getQuantity());
+                ps.setInt(2, foodItemInvoice.getFoodItem().getId());
+                ps.setString(3, foodItemInvoice.getSize());
+                ps.executeUpdate();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
-//    public int getMembershipPoint(Invoice invoice) {
-//        int membershipPoint = 0;
-//        String queryTotalPurchase = "SELECT SUM(tblfooditeminvoice.quantity * tblfooditemdetail.price) AS membership_point " +
-//                "FROM tblinvoice " +
-//                "JOIN tblfooditeminvoice ON tblinvoice.id = tblfooditeminvoice.invoiceID " +
-//                "JOIN tblfooditemdetail ON tblfooditeminvoice.foodItemID = tblfooditemdetail.foodItemID AND tblfooditeminvoice.size = tblfooditemdetail.size " +
-//                "WHERE tblinvoice.customerID = ?";
-//        try {
-//            PreparedStatement ps = con.prepareStatement(queryTotalPurchase);
-//            ps.setInt(1, invoice.getCustomer().getId());
-//            ResultSet rs = ps.executeQuery();
-//            if (rs.next()) {
-//                membershipPoint = rs.getInt("membership_point");
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//
-//        String queryExchange = "SELECT SUM(tblfooditeminvoice.quantity * tblfooditemdetail.price) AS membership_point " +
-//                "FROM tblinvoice " +
-//                "JOIN tblfooditeminvoice ON tblinvoice.id = tblfooditeminvoice.invoiceID " +
-//                "JOIN tblfooditemdetail ON tblfooditeminvoice.foodItemID = tblfooditemdetail.foodItemID AND tblfooditeminvoice.size = tblfooditemdetail.size " +
-//                "WHERE tblinvoice.customerID = ? AND tblfooditeminvoice.exchangeQuantity > 0";
-//        try {
-//            PreparedStatement ps = con.prepareStatement(queryExchange);
-//            ps.setInt(1, invoice.getCustomer().getId());
-//            ResultSet rs = ps.executeQuery();
-//            if (rs.next()) {
-//                membershipPoint -= rs.getInt("membership_point");
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        return membershipPoint;
-//    }
+
 }

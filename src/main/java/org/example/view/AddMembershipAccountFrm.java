@@ -57,13 +57,19 @@ public class AddMembershipAccountFrm extends JFrame implements ActionListener {
         String age = ageTextField.getText();
         String phoneNumber = phoneNumberTextField.getText();
         String address = addressTextField.getText();
+        Customer customer = new Customer(fullName, address, Integer.parseInt(age), phoneNumber, 0);
         if (fullName.isEmpty() || age.isEmpty() || phoneNumber.isEmpty() || address.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Please fill all fields");
         } else {
-            this.customer = customerDAO.addCustomer(new Customer(fullName, address, Integer.parseInt(age), phoneNumber, 0));
-            JOptionPane.showMessageDialog(this, "Add customer successfully");
-            (new ShowInvoiceFrm(this.invoice)).setVisible(true);
-            this.dispose();
+            if(!customerDAO.addCustomer(customer)){
+                JOptionPane.showMessageDialog(this, "Customer already exists");
+            }
+            else{
+                JOptionPane.showMessageDialog(this, "Add customer successfully");
+                invoice.setCustomer(customer);
+                (new ExchangeMembershipPointFrm(invoice)).setVisible(true);
+                this.dispose();
+            }
         }
     }
 }

@@ -80,4 +80,17 @@ public class Invoice {
     public void setTickets(ArrayList<Ticket> tickets) {
         this.tickets = tickets;
     }
+
+    @Override
+    public String toString() {
+        return "Invoice{" +
+                "id=" + id +
+                ", payDate='" + payDate + '\'' +
+                ", totalPrice=" + totalPrice +
+                ", user=" + user +
+                ", customer=" + customer +
+                ", foodItemInvoices=" + foodItemInvoices +
+                ", tickets=" + tickets +
+                '}';
+    }
 }
