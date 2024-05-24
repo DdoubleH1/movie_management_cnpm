@@ -2,8 +2,10 @@ package org.example.view;
 
 import org.example.constant.TableColumn;
 import org.example.constant.TableConstant;
+import org.example.dao.FoodItemDetailDAO;
 import org.example.dao.InvoiceDAO;
 import org.example.mapper.TableMapper;
+import org.example.model.FoodItemInvoice;
 import org.example.model.Invoice;
 import org.example.view.component.Table;
 
@@ -20,6 +22,7 @@ public class ShowInvoiceFrm extends JFrame implements ActionListener {
     private JTextArea invoiceInfo;
     private Invoice invoice;
     private final InvoiceDAO invoiceDAO = new InvoiceDAO();
+    private final FoodItemDetailDAO foodItemDetailDAO = new FoodItemDetailDAO();
 
     public ShowInvoiceFrm(Invoice invoice) {
         this.invoice = invoice;
@@ -58,16 +61,38 @@ public class ShowInvoiceFrm extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == confirmButton) {
-            invoiceDAO.save(invoice);
-            JOptionPane.showMessageDialog(this, "Confirm successfully");
-            (new SellerHomeFrm(invoice.getUser())).setVisible(true);
-            this.dispose();
+            confirmButtonClick();
         } else if (e.getSource() == cancelButton) {
             (new ExchangeMembershipPointFrm(invoice)).setVisible(true);
             this.dispose();
         }
     }
 
+    private void confirmButtonClick() {
+        for (FoodItemInvoice foodItemInvoice : invoice.getFoodItemInvoices()) {
+            if (!foodItemDetailDAO.checkQuantity(foodItemInvoice)) {
+                showDialog(foodItemInvoice);
+                return;
+            }
+        }
+        invoiceDAO.save(invoice);
+        JOptionPane.showMessageDialog(this, "Confirm successfully");
+        (new SellerHomeFrm(invoice.getUser())).setVisible(true);
+        this.dispose();
+    }
+
+    private void showDialog(FoodItemInvoice foodItemInvoice) {
+        JLabel label = new JLabel("The quantity of " + foodItemInvoice.getFoodItem().getName() + " is not enough");
+        Object[] message = {
+                label
+        };
+        Object[] options = {"OK"};
+        int option = JOptionPane.showOptionDialog(this, message, "Notification", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
+        if (option == JOptionPane.YES_OPTION) {
+            (new SellerHomeFrm(invoice.getUser())).setVisible(true);
+            this.dispose();
+        }
+    }
 
     private void createUIComponents() {
         // TODO: place custom component creation code here
